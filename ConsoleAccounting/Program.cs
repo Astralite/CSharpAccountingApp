@@ -21,12 +21,8 @@ namespace ConsoleAccounting
 
             FileReader file = new FileReader();
             List<Staff> myStaff = file.ReadFile();
-            foreach (Staff staff in myStaff)
-            {
-                staff.HoursWorked = 200;
-                staff.CalculatePay();
-                Console.WriteLine("{0}", staff.ToString());
-            }
+            PaySlip paySlip = new PaySlip(1,2020);
+            paySlip.GeneratePaySlips(myStaff);
 
             //Console.ReadKey();
         }
@@ -171,5 +167,68 @@ namespace ConsoleAccounting
         }
     }
 
-    // class PaySlip { }
+    class PaySlip
+    {
+        private int month;
+        private int year;
+
+        enum MonthsOfYear
+        {
+            JAN=1,
+            FEB=2,
+            MAR=3,
+            APR=4,
+            MAY=5,
+            JUN=6,
+            JUL=7,
+            AUG=8,
+            SEP=9,
+            OCT=10,
+            NOV=11,
+            DEC=12
+        } // enums are private by default
+
+        public PaySlip(int payMonth, int payYear)
+        {
+            month = payMonth;
+            year = payYear;
+        }
+
+        public void GeneratePaySlips(List<Staff> myStaff)
+        {
+            string path;
+            foreach (Staff staff in myStaff)
+            {
+                path = staff.NameOfStaff + ".txt";
+                StreamWriter sw = new StreamWriter(path);
+
+                Console.WriteLine("How many hours did {0} work?: ", staff.NameOfStaff);
+                string userInput = Console.ReadLine();
+                int hoursWorked = 0;
+                Int32.TryParse(userInput, out hoursWorked);
+                staff.HoursWorked = hoursWorked;
+                staff.CalculatePay();
+                sw.WriteLine("PAYSLIP FOR {0} {1}", (MonthsOfYear)month, year);
+                sw.WriteLine("=====================");
+                sw.WriteLine("Name of Staff: {0}", staff.NameOfStaff);
+                sw.WriteLine("Hours Worked: {0}", staff.HoursWorked);
+                sw.WriteLine("");
+                sw.WriteLine("Basic Pay: {0:C2}", staff.BasicPay);
+                if (staff.GetType() == typeof(Manager))
+                {
+                    sw.WriteLine("Allowance: {0:C2}", ((Manager)staff).Allowance);
+                }
+                if (staff.GetType() == typeof(Admin))
+                {
+                    sw.WriteLine("Overtime: {0:C2}", ((Admin)staff).Overtime);
+                }
+                sw.WriteLine("");
+                sw.WriteLine("=====================");
+                sw.WriteLine("Total Pay: {0:C2}", staff.TotalPay);
+                sw.WriteLine("=====================");
+
+                sw.Close();
+            }
+        }
+    }
 }
