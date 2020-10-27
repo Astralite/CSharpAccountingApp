@@ -1,4 +1,5 @@
 using System;
+using System.IO;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -17,6 +18,15 @@ namespace ConsoleAccounting
             Console.WriteLine(staff1.TotalPay);
             Console.WriteLine(staff1.ToString());
             */
+
+            FileReader file = new FileReader();
+            List<Staff> myStaff = file.ReadFile();
+            foreach (Staff staff in myStaff)
+            {
+                staff.HoursWorked = 200;
+                staff.CalculatePay();
+                Console.WriteLine("{0}", staff.ToString());
+            }
 
             //Console.ReadKey();
         }
@@ -119,6 +129,47 @@ namespace ConsoleAccounting
         }
     }
 
-    // class FileReader { }
+    class FileReader
+    {
+        public List<Staff> ReadFile()
+        {
+            List<Staff> myStaff = new List<Staff>();
+            string[] result = new string[2];
+            string path = "staff.txt";
+            string[] separators = { ", " };
+
+            if (File.Exists(path))
+            {
+                using (StreamReader sr = new StreamReader(path))
+                {
+                    while (!sr.EndOfStream)
+                    {
+                        string line = sr.ReadLine();
+                        result = line.Split(separators, StringSplitOptions.None);
+                        switch (result[1])
+                        {
+                            case "Manager":
+                                myStaff.Add(new Manager(result[0]));
+                                break;
+                            case "Admin":
+                                myStaff.Add(new Admin(result[0]));
+                                break;
+                            default:
+                                myStaff.Add(new Staff(result[0], 25));
+                                break;
+                        }
+                    }
+                    sr.Close();
+                }
+            }
+            else
+            {
+                Console.WriteLine("File staff.txt not found");
+            }
+
+            return myStaff;
+        }
+    }
+
     // class PaySlip { }
 }
