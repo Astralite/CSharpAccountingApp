@@ -11,14 +11,14 @@ namespace ConsoleAccounting
         static void Main(string[] args)
         {
             /*
-            Staff staff1 = new Staff("Kyle", 32.00f);
-            staff1.HoursWorked = 10;
+            Staff staff1 = new Manager("Kyle");
+            staff1.HoursWorked = 160;
             staff1.CalculatePay();
             Console.WriteLine(staff1.TotalPay);
             Console.WriteLine(staff1.ToString());
             */
 
-            Console.ReadKey();
+            //Console.ReadKey();
         }
     }
 
@@ -70,8 +70,55 @@ namespace ConsoleAccounting
 
     }
 
-    // class Manager : Staff { }
-    // class Admin : Staff { }
+    class Manager : Staff
+    {
+        private const float managerHourlyRate = 50;
+
+        public int Allowance { get; private set; }
+
+        public Manager(string name) : base(name, managerHourlyRate) { }
+
+        public override void CalculatePay()
+        {
+            base.CalculatePay();
+            Allowance = 1000;
+            if (HoursWorked > 160)
+            {
+                TotalPay += Allowance;
+            }
+        }
+
+        public override string ToString()
+        {
+            return base.ToString() + " Allowance = " + Allowance;
+        }
+    }
+
+    class Admin : Staff
+    {
+        private float overtimeRate = 15.5f;
+        private const float adminHourlyRate = 30f;
+
+        public float Overtime { get; private set; }
+
+        public Admin(string name) : base(name, adminHourlyRate) { }
+
+        public override void CalculatePay()
+        {
+            base.CalculatePay();
+            if (HoursWorked > 160)
+            {
+                Overtime = (HoursWorked - 160) * overtimeRate;
+                TotalPay += Overtime;
+            }
+        }
+
+        public override string ToString()
+        {
+            return base.ToString() + " Overtime = " + Overtime;
+        }
+    }
+
     // class FileReader { }
     // class PaySlip { }
 }
