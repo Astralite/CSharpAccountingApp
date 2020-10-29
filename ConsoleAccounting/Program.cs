@@ -14,7 +14,19 @@ namespace ConsoleAccounting
 
             FileReader file = new FileReader();
             List<Staff> myStaff = file.ReadFile();
-            PaySlip paySlip = new PaySlip(1,2020);
+            int monthNumber = 1;
+            int year = 2020;
+            string userInput;
+            
+            Console.WriteLine("Enter the current month number (e.g. 3): ");
+            userInput = Console.ReadLine();
+            Int32.TryParse(userInput, out monthNumber);
+
+            Console.WriteLine("Enter the current year (e.g. 2020): ");
+            userInput = Console.ReadLine();
+            Int32.TryParse(userInput, out year);
+
+            PaySlip paySlip = new PaySlip(monthNumber,year);
             paySlip.GeneratePaySlips(myStaff);
             paySlip.GenerateSummary(myStaff);
             Console.WriteLine(paySlip.ToString());
@@ -237,6 +249,7 @@ namespace ConsoleAccounting
             string path = "Summary.txt";
             StreamWriter sw = new StreamWriter(path);
             sw.WriteLine("Staff with less than 10 working hours");
+            sw.WriteLine("For the month of {0} {1}", (MonthsOfYear)month, year);
             sw.WriteLine("");
             foreach (var staff in lessThan10HoursWorked)
             {
