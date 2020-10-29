@@ -11,18 +11,13 @@ namespace ConsoleAccounting
     {
         static void Main(string[] args)
         {
-            /*
-            Staff staff1 = new Manager("Kyle");
-            staff1.HoursWorked = 160;
-            staff1.CalculatePay();
-            Console.WriteLine(staff1.TotalPay);
-            Console.WriteLine(staff1.ToString());
-            */
 
             FileReader file = new FileReader();
             List<Staff> myStaff = file.ReadFile();
             PaySlip paySlip = new PaySlip(1,2020);
             paySlip.GeneratePaySlips(myStaff);
+            paySlip.GenerateSummary(myStaff);
+            Console.WriteLine(paySlip.ToString());
 
             //Console.ReadKey();
         }
@@ -229,6 +224,26 @@ namespace ConsoleAccounting
 
                 sw.Close();
             }
+        }
+
+        public void GenerateSummary(List<Staff> myStaff)
+        {
+            Console.WriteLine("summarizing");
+            var lessThan10HoursWorked =
+                from staff in myStaff
+                where (staff.HoursWorked < 10)
+                orderby staff.HoursWorked ascending
+                select new { staff.NameOfStaff, staff.HoursWorked };
+            string path = "Summary.txt";
+            StreamWriter sw = new StreamWriter(path);
+            sw.WriteLine("Staff with less than 10 working hours");
+            sw.WriteLine("");
+            foreach (var staff in lessThan10HoursWorked)
+            {
+                Console.WriteLine("Name of Staff: {0}, Hours Worked: {1}", staff.NameOfStaff, staff.HoursWorked);
+                sw.WriteLine("Name of Staff: {0}, Hours Worked: {1}", staff.NameOfStaff, staff.HoursWorked);
+            }
+            sw.Close();
         }
     }
 }
